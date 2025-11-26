@@ -1,1 +1,533 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>I 4 Profili Medici - Role Play</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px 0 30px;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            color: white;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #a0aec0;
+            font-size: 0.9rem;
+        }
+
+        .cards-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        /* Flip Card Structure - ALTEZZA FISSA */
+        .card-wrapper {
+            perspective: 1000px;
+            height: 520px;
+            cursor: pointer;
+        }
+
+        .card {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card-wrapper.flipped .card {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .card-front {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
+            background: white;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        /* Colori Fronte */
+        .yellow .card-front { background: linear-gradient(135deg, #f6c344 0%, #f0a500 100%); }
+        .red .card-front { background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%); }
+        .green .card-front { background: linear-gradient(135deg, #48bb78 0%, #2f855a 100%); }
+        .blue .card-front { background: linear-gradient(135deg, #4299e1 0%, #2b6cb0 100%); }
+
+        /* Front Card Content */
+        .profile-icon {
+            font-size: 4rem;
+            margin-bottom: 16px;
+        }
+
+        .profile-badge {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.9;
+            margin-bottom: 12px;
+        }
+
+        .doctor-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .doctor-spec {
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+
+        .tap-hint {
+            position: absolute;
+            bottom: 16px;
+            font-size: 0.75rem;
+            opacity: 0.7;
+        }
+
+        /* Back Card Content */
+        .card-back-header {
+            padding: 14px 18px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .yellow .card-back-header { background: linear-gradient(135deg, #f6c344 0%, #f0a500 100%); }
+        .red .card-back-header { background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%); }
+        .green .card-back-header { background: linear-gradient(135deg, #48bb78 0%, #2f855a 100%); }
+        .blue .card-back-header { background: linear-gradient(135deg, #4299e1 0%, #2b6cb0 100%); }
+
+        .back-title {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .back-subtitle {
+            font-size: 0.8rem;
+            opacity: 0.9;
+            margin-top: 2px;
+        }
+
+        .card-back-content {
+            padding: 16px 18px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .section {
+            margin-bottom: 16px;
+        }
+
+        .section:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-title {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .yellow .section-title { color: #d69e2e; }
+        .red .section-title { color: #c53030; }
+        .green .section-title { color: #2f855a; }
+        .blue .section-title { color: #2b6cb0; }
+
+        .section-content {
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: #4a5568;
+        }
+
+        .section-content ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .section-content li {
+            padding-left: 16px;
+            position: relative;
+            margin-bottom: 4px;
+        }
+
+        .section-content li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        .yellow .section-content li::before { color: #f6c344; }
+        .red .section-content li::before { color: #e53e3e; }
+        .green .section-content li::before { color: #48bb78; }
+        .blue .section-content li::before { color: #4299e1; }
+
+        .objection-box {
+            background: #f7fafc;
+            border-left: 3px solid;
+            padding: 12px 14px;
+            border-radius: 0 8px 8px 0;
+            font-style: italic;
+            font-size: 0.85rem;
+            color: #4a5568;
+        }
+
+        .yellow .objection-box { border-color: #f6c344; background: #fffbeb; }
+        .red .objection-box { border-color: #e53e3e; background: #fff5f5; }
+        .green .objection-box { border-color: #48bb78; background: #f0fff4; }
+        .blue .objection-box { border-color: #4299e1; background: #ebf8ff; }
+
+        .tip-box {
+            background: #f7fafc;
+            padding: 12px 14px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            color: #4a5568;
+        }
+
+        .tip-highlight {
+            display: inline-block;
+            font-weight: 600;
+            margin-top: 8px;
+            font-size: 0.8rem;
+        }
+
+        .yellow .tip-highlight { color: #92400e; }
+        .red .tip-highlight { color: #9b2c2c; }
+        .green .tip-highlight { color: #276749; }
+        .blue .tip-highlight { color: #2c5282; }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #718096;
+            font-size: 0.75rem;
+        }
+
+        /* Tablet */
+        @media (min-width: 640px) {
+            body {
+                padding: 40px 20px;
+            }
+
+            .header h1 {
+                font-size: 2.2rem;
+            }
+
+            .cards-container {
+                grid-template-columns: repeat(2, 1fr);
+                max-width: 1000px;
+                gap: 24px;
+            }
+
+            .card-wrapper {
+                height: 540px;
+            }
+        }
+
+        /* Desktop */
+        @media (min-width: 1200px) {
+            .cards-container {
+                grid-template-columns: repeat(4, 1fr);
+                max-width: 1600px;
+            }
+
+            .card-wrapper {
+                height: 560px;
+            }
+
+            .profile-icon {
+                font-size: 4.5rem;
+            }
+
+            .doctor-name {
+                font-size: 1.3rem;
+            }
+
+            .doctor-spec {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>🎯 I 4 Profili Medici</h1>
+        <p>Tocca una carta per scoprire il profilo</p>
+    </header>
+
+    <div class="cards-container">
+        <!-- GIALLO -->
+        <div class="card-wrapper yellow" onclick="this.classList.toggle('flipped')">
+            <div class="card">
+                <div class="card-front">
+                    <div class="profile-icon">💡</div>
+                    <div class="profile-badge">🌟 Passionate</div>
+                    <div class="doctor-name">Dott.ssa Camilla Rinaldi</div>
+                    <div class="doctor-spec">Dermatologia • 38 anni</div>
+                    <div class="tap-hint">Tocca per girare →</div>
+                </div>
+                <div class="card-back">
+                    <div class="card-back-header">
+                        <div class="back-title">💡 Visione & Entusiasmo</div>
+                        <div class="back-subtitle">Energica • Intuitiva • Creativa</div>
+                    </div>
+                    <div class="card-back-content">
+                        <div class="section">
+                            <div class="section-title">👁️ Comportamento</div>
+                            <div class="section-content">
+                                <ul>
+                                    <li>Accoglie con entusiasmo, crea subito relazione</li>
+                                    <li>Usa metafore, esempi, linguaggio visivo</li>
+                                    <li>Si lascia coinvolgere da idee nuove</li>
+                                    <li>Può divagare, aprire parentesi</li>
+                                    <li>Utilizza strumenti digitali</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="section">
+                            <div class="section-title">❤️ Bisogni</div>
+                            <div class="section-content">
+                                <ul>
+                                    <li>Percepire innovazione</li>
+                                    <li>Capire la visione e il valore aggiunto</li>
+                                    <li>Sentirsi ispirata, non solo informata</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="section">
+                            <div class="section-title">🗣️ Obiezione</div>
+                            <div class="objection-box">"Mi piace… ma vorrei qualcosa di più innovativo e distintivo per i miei pazienti."</div>
+                        </div>
+                        <div class="section">
+                            <div class="section-title">✅ Suggerimenti ISF</div>
+                            <div class="tip-box">
+                                Usa energia positiva e tono coinvolgente. Trasforma dati in immagini e benefici concreti. Riporta gentilmente al focus quando divaga.
+                                <div class="tip-highlight">→ "Partiamo con 2–3 casi pilota"</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ROSSO -->
+        <div class="card-wrapper red" onclick="this.classList.toggle('flipped')">
+            <div class="card">
+                <div class="card-front">
+                    <div class="profile-icon">🎯</div>
+                    <div class="profile-badge">⚡ Efficient</div>
+                    <div class="doctor-name">Dott. Marco Bellini</div>
+                    <div class="doctor-spec">Allergologia • 50 anni</div>
+                    <div class="tap-hint">Tocca per girare →</div>
+                </div>
+                <div class="card-back">
+                    <div class="card-back-header">
+                        <div class="back-title">🎯 Sintesi & Risultati</div>
+                        <div class="back-subtitle">Diretto • Pragmatico • Rapido</div>
+                    </div>
+                    <div class="card-back-content">
+                        <div class="section">
+                            <div class="section-title">👁️ Comportamento</div>
+                            <div class="section-content">
+                                <ul>
+                                    <li>Tempo ridotto: va subito al punto</li>
+                                    <li>Domande brevi, precise, alta pressione</li>
+                                    <li>Cerca il "vantaggio pratico" immediato</li>
+                                    <li>Non tollera digressioni</li>
+                                    <li>Digitale: strumenti essenziali</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="section">
+                            <div class="section-title">❤️ Bisogni</div>
+                            <div class="section-content">
+                                <ul>
+                                    <li>Sintesi estrema</li>
+                                    <li>1–2 dati chiave immediati</li>
+                                    <li>"Cosa cambia nella mia pratica?"</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="section">
+                            <div class="section-title">🗣️ Obiezione</div>
+                            <div class="objection-box">"Dimmi in due parole cosa cambia rispetto a quello che uso già."</div>
+                        </div>
+                        <div class="section">
+                            <div class="section-title">✅ Suggerimenti ISF</div>
+                            <div class="tip-box">
+                                Presenta subito 3 messaggi chiave. Rispondi breve, preciso, misurabile. Evita qualsiasi digressione: segui i suoi tempi.
+                                <div class="tip-highlight">→ "Proviamolo su 3 pazienti target"</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VERDE -->
+        <div class="card-wrapper green" onclick="this.classList.toggle('flipped')">
+            <div class="card">
+                <div class="card-front">
+                    <div class="profile-icon">🤝</div>
+                    <div class="profile-badge">💚 Patient Centric</div>
+                    <div class="doctor-name">Dott.ssa Elisa Moretti</div>
+                    <div class="doctor-spec">Pediatria • 45 anni</div>
+                    <div class="tap-hint">Tocca per girare →</div>
+                </div>
+                <div class="card-back">
+                    <div class="card-back-header">
+                        <div class="back-title">🤝 Relazione & Sicurezza</div>
+                        <div class="back-subtitle">Empatica • Prudente • Relazionale</div>
+                    </div>
+                    <div class="card-back-content">
+                        <div class="section">
+                            <div class="section-title">👁️ Comportamento</div>
+                            <div class="section-content">
+                                <ul>
+                                    <li>Parte sempre dal paziente e famiglia</li>
+                                    <li>Ascolta molto, domande su vissuto</li>
+                                    <li>Valuta sicurezza e tollerabilità</li>
+                                    <li>Sensibile ai caregiver</li>
+                                    <li>Cerca confronto con colleghi</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="section">
+                            <div class="section-title">❤️ Bisogni</div>
+                            <div class="section-content">
+                                <ul>
+                                    <li>Alta sicurezza, bassi effetti collaterali</li>
+                                    <li>Bassa complessità operativa</li>
+                                    <li>Supporto interfaccia caregiver</li>
+                                    <li>Stabilità e continuità terapeutica</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="section">
+                            <div class="section-title">🗣️ Obiezione</div>
+                            <div class="objection-box">"I genitori potrebbero confondersi o preoccuparsi… devo essere sicura che sia davvero tranquillo."</div>
+                        </div>
+                        <div class="section">
+                            <div class="section-title">✅ Suggerimenti ISF</div>
+                            <div class="tip-box">
+                                Parti dalla relazione: "Come stanno i genitori?" Evidenzia sicurezza e semplicità. Offri protocollo step-by-step.
+                                <div class="tip-highlight">→ "Testiamolo su pochi pazienti e ci aggiorniamo"</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BLU -->
+        <div class="card-wrapper blue" onclick="this.classList.toggle('flipped')">
+            <div class="card">
+                <div class="card-front">
+                    <div class="profile-icon">🔬</div>
+                    <div class="profile-badge">📊 Evidence First</div>
+                    <div class="doctor-name">Prof. Luca Ferraris</div>
+                    <div class="doctor-spec">Dermatologia ospedaliera • 56 anni</div>
+                    <div class="tap-hint">Tocca per girare →</div>
+                </div>
+                <div class="card-back">
+                    <div class="card-back-header">
+                        <div class="back-title">🔬 Dati & Precisione</div>
+                        <div class="back-subtitle">Razionale • Analitico • Metodico</div>
+                    </div>
+                    <div class="card-back-content">
+                        <div class="section">
+                            <div class="section-title">👁️ Comportamento</div>
+                            <div class="section-content">
+                                <ul>
+                                    <li>Domande tecniche molto specifiche</li>
+                                    <li>Analizza numeri, %, studi, protocolli</li>
+                                    <li>Rigoroso su meccanismi d'azione</li>
+                                    <li>Non apprezza comunicazione emotiva</li>
+                                    <li>Usa piattaforme per articoli scientifici</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="section">
+                            <div class="section-title">❤️ Bisogni</div>
+                            <div class="section-content">
+                                <ul>
+                                    <li>Evidenze solide e confronti numerici</li>
+                                    <li>Razionale clinico lineare</li>
+                                    <li>Protocolli chiari, validati</li>
+                                    <li>Dati comparativi affidabili</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="section">
+                            <div class="section-title">🗣️ Obiezione</div>
+                            <div class="objection-box">"Mi servono dati comparativi solidi per prendere una decisione."</div>
+                        </div>
+                        <div class="section">
+                            <div class="section-title">✅ Suggerimenti ISF</div>
+                            <div class="tip-box">
+                                Porta tecnicismi essenziali. Presenta tutto in modo ordinato, logico, strutturato. Evita dettagli superflui.
+                                <div class="tip-highlight">→ "Nei pazienti con X, questi dati indicano che possiamo…"</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>Framework Pierre Fabre — Passionate • Efficient • Patient Centric • Evidence First</p>
+    </footer>
+</body>
+</html>
